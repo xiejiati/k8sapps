@@ -1,0 +1,92 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  #名字规范 模块名-deploy-模块内微服务名
+  name: blog-server 
+  #命名空间规范 模块名
+  namespace: blog
+  # these labels can be applied automatically
+  # from the labels in the pod template if not set
+spec:
+  # 容器运行个数
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1      #滚动升级时会先启动1个pod
+      maxUnavailable: 1 #滚动升级时允许的最大Unavailable的pod个数
+  # selector can be applied automatically
+  # from the labels in the pod template if not set
+  template:
+    metadata:
+      labels:
+        #规范： module为模块名 app为微服务名 tier 为角色 请根据实际填写，比如 mysql主从的master slave等
+        module: blog 
+        app: blog-service 
+    spec:
+      terminationGracePeriodSeconds: 60 #k8s将会给应用发送SIGTERM信号，可以用来正确、优雅地关闭应用,默认为30秒
+      containers:
+      #规范： 模块名-微服务名-自定义名-container
+      - name: blog-container
+        image: docker.io/wordpress
+        #volumeMounts:
+        ##规范：volume-开头，后面根据用途填写
+        #- name: volume-conf
+        #  mountPath: /data/conf
+        #- name: volume-supervisord-confd 
+        #  mountPath: /etc/supervisord.d
+        #- name: volume-log 
+        #  mountPath: /data/log
+        #resources:
+        #  #requests用于调度判断，最小资源需求。 cpu100m 为0.1核
+        #  limits:
+        #    cpu: 800m
+        #    memory: 800Mi
+        ports:
+        - containerPort: 80
+        #readinessProbe: #kubernetes认为该pod是启动成功的
+        #  tcpSocket:
+        #     port: 443 
+        #  initialDelaySeconds: 20
+        #  periodSeconds: 5
+        #  timeoutSeconds: 3
+        #  successThreshold: 1
+        #  failureThreshold: 5
+        #livenessProbe: #kubernetes认为该pod是存活的,不存活则需要重启
+        #  tcpSocket:
+        #     port: 443 
+        #  initialDelaySeconds: 20
+        #  periodSeconds: 5
+        #  timeoutSeconds: 5
+        #  successThreshold: 1
+        #  failureThreshold: 3
+      #volumes:
+      #  - name: volume-conf
+      #    configMap:
+      #      name: api3.cm.api-server-access
+      #      items:
+      #      - key: copy_conf.sh
+      #        path: copy_conf.sh
+      #      #cert
+      #      - key: yunapi_server.key
+      #        path: cert/yunapi_server.key
+      #      - key: yunapi_server.crt
+      #        path: cert/yunapi_server.crt
+      #      #nginx
+      #      - key: nginx.conf
+      #        path: nginx/conf/nginx.conf
+      #      #code
+      #      - key: access.cfg 
+      #        path: bin/access.cfg
+      #      - key: errorCode.cfg 
+      #        path: bin/errorCode.cfg
+      #      - key: CloudApiApp.AccessServer.config.conf
+      #        path: conf/CloudApiApp.AccessServer.config.conf
+      #  - name: volume-supervisord-confd
+      #    configMap:
+      #      name: api3.cm.supervisord 
+      #      items:
+      #      - key: supervisord.api_server_access.ini
+      #        path: supervisord.api_server_access.ini
+      #  - name: volume-log
+      #    hostPath:
+      #      path: /data/k8s/log/api3/access
