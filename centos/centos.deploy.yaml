@@ -2,9 +2,9 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   #名字规范 模块名-deploy-模块内微服务名
-  name: blog-server 
+  name: centos
   #命名空间规范 模块名
-  namespace: blog
+  namespace: default
   # these labels can be applied automatically
   # from the labels in the pod template if not set
 spec:
@@ -20,18 +20,17 @@ spec:
     metadata:
       labels:
         #规范： module为模块名 app为微服务名 tier 为角色 请根据实际填写，比如 mysql主从的master slave等
-        module: blog 
-        app: blog-service 
+        module: centos
+        app: centos 
     spec:
-      tolerations:
-      - key: "key"
-        operator: "Equal"
-        value: "node1"
-        effect: "NoSchedule"
-      terminationGracePeriodSeconds: 60 #k8s将会给应用发送SIGTERM信号，可以用来正确、优雅地关闭应用,默认为30秒
       containers:
       #规范： 模块名-微服务名-自定义名-container
-      - name: blog-container
-        image: docker.io/wordpress
-        ports:
-        - containerPort: 80
+      - name: centos-container
+        image: docker.io/centos
+        command: [ "/bin/bash", "-ce", "tail -f /dev/null" ]
+      #tolerations:
+      #- key: "key"
+      #  operator: "Equal"
+      #  value: "node1"
+      #  effect: "NoSchedule"
+        

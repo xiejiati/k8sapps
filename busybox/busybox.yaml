@@ -12,3 +12,8 @@ spec:
     imagePullPolicy: IfNotPresent
     name: busybox
   restartPolicy: Always
+  tolerations:
+  - key: "key"
+    operator: "Equal"
+    value: "node1"
+    effect: "NoSchedule"
