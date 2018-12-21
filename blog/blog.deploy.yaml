@@ -23,11 +23,11 @@ spec:
         module: blog 
         app: blog-service 
     spec:
-      tolerations:
-      - key: "key"
-        operator: "Equal"
-        value: "node1"
-        effect: "NoSchedule"
+      #tolerations:
+      #- key: "key"
+      #  operator: "Equal"
+      #  value: "node1"
+      #  effect: "NoSchedule"
       terminationGracePeriodSeconds: 60 #k8s将会给应用发送SIGTERM信号，可以用来正确、优雅地关闭应用,默认为30秒
       containers:
       #规范： 模块名-微服务名-自定义名-container
