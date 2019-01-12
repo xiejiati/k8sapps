@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  #名字规范 模块名-deploy-模块内微服务名
+  name: misc
+  #命名空间规范 模块名
+  namespace: default
+  # these labels can be applied automatically
+  # from the labels in the pod template if not set
+spec:
+  # 容器运行个数
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1      #滚动升级时会先启动1个pod
+      maxUnavailable: 1 #滚动升级时允许的最大Unavailable的pod个数
+  # selector can be applied automatically
+  # from the labels in the pod template if not set
+  template:
+    metadata:
+      labels:
+        #规范： module为模块名 app为微服务名 tier 为角色 请根据实际填写，比如 mysql主从的master slave等
+        module: misc
+        app:  misc
+    spec:
+      containers:
+      #规范： 模块名-微服务名-自定义名-container
+      - name: misc-container
+        image: xjtalex/misc:latest
+        command: [ "/bin/bash", "-ce", "tail -f /dev/null" ]
+      #tolerations:
+      #- key: "key"
+      #  operator: "Equal"
+      #  value: "node1"
+      #  effect: "NoSchedule"
+        
